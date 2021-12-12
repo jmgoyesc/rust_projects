@@ -4,6 +4,8 @@ use std::collections::HashMap;
 use std::result::Result;
 use std::path::Path;
 
+const DATASOURCE: &str = "kv.db";
+
 fn main() {
     let mut arguments = std::env::args().skip(1);
     let key = arguments.next().expect("Key was not there");
@@ -24,15 +26,13 @@ struct Database {
 
 impl Database {
     fn new() -> Result<Database, std::io::Error> {
-        let database_name = "kv.db";
-
         // check if the file exists otherwise created it
-        if !Path::new(database_name).exists() {
-            std::fs::write(database_name, "")?;
+        if !Path::new(DATASOURCE).exists() {
+            std::fs::write(DATASOURCE, "")?;
         }
         
         // read the kv.db file
-        let contents = std::fs::read_to_string(database_name)?;
+        let contents = std::fs::read_to_string(DATASOURCE)?;
 
         let mut map = HashMap::new();
         for line in contents.lines() {
@@ -60,6 +60,6 @@ impl Drop for Database {
             contents.push_str(value);
             contents.push('\n');
         }
-        let _ = std::fs::write("kv.db", contents);
+        let _ = std::fs::write(DATASOURCE, contents);
     }
 }
